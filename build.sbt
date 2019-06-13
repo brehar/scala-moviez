@@ -21,7 +21,7 @@ def fancyPrompt(projectName: String): String =
 
 def cyan(projectName: String): String = scala.Console.CYAN + projectName + scala.Console.RESET
 
-shellPrompt in ThisBuild := (_ => fancyPrompt(name.value))
+shellPrompt := (_ => fancyPrompt(name.value))
 
 SettingKey[Option[File]]("ide-output-directory") in ThisBuild := Option(file("idea"))
 
@@ -50,19 +50,23 @@ val akkaHttpVersion = "10.1.7"
 lazy val `server` =
   project
     .in(file("./server"))
-    .settings(libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
-      "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
-      "com.pauldijou" %% "jwt-spray-json" % "2.1.0"
-    ))
+    .settings(
+      shellPrompt := (_ => fancyPrompt(name.value)),
+      libraryDependencies ++= Seq(
+        "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+        "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+        "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+        "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
+        "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
+        "com.pauldijou" %% "jwt-spray-json" % "2.1.0"
+      )
+    )
     .dependsOn(`data`)
 
 lazy val `data` = project
   .in(file("./data"))
   .settings(
+    shellPrompt := (_ => fancyPrompt(name.value)),
     resolvers += Resolver.jcenterRepo,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-persistence" % "2.5.13",
@@ -75,4 +79,5 @@ lazy val `data` = project
   )
   .dependsOn(`common`)
 
-lazy val `common` = project.in(file("./common"))
+lazy val `common` =
+  project.in(file("./common")).settings(shellPrompt := (_ => fancyPrompt(name.value)))
